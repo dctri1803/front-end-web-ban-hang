@@ -6,21 +6,21 @@ import { ButtonInputSearch } from '../ButtonInputSearch/ButtonInputSearch';
 
 export const HeaderComponent = () => {
   return (
-    <div>
+    <div style={{width: '100%', background: 'rgb(26, 148, 255)'}}>
       <WrapperHeader >
-        <Col span={4}>
+        <Col span={5}>
           <WrapperTextHeader>PC Shop</WrapperTextHeader>
         </Col>
-        <Col span={12}>
+        <Col span={13}>
           <ButtonInputSearch
             size='large'
             textButton='Tìm kiếm'
             placeholder="input search text"
             // onSearch={onSearch}
-            enterButton
+            
           />
         </Col>
-        <Col span={8} style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+        <Col span={6} style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <WrapperHeaderAccount style={{ padding: '0 30px' }}>
             <UserOutlined style={{ fontSize: '30px' }} />
             <div>
