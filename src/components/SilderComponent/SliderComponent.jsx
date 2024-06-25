@@ -16,7 +16,7 @@ export const SliderComponent = ({ arrImages }) => {
     <Slider {...settings}>
       {arrImages.map((img) => {
         return (
-          <Image src={img} alt='silder' width={'100%'} height={300}  />
+          <Image key={img} src={img} alt='silder' width={'100%'} height={300}  />
         )
       })}
     </Slider>

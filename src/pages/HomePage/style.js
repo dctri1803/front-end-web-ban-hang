@@ -11,10 +11,9 @@ export const WrapperTypeProduct = styled.div`
 
 export const WrapperButtonMore = styled(ButtonComponent)`
     &: hover {
-        color: '#fff';
-        background: rgb(13, 92, 182);
+        color:  transparent;
         span {
-            color:#fff;
+            color: #fff;
         }
     }
     width: 100%;

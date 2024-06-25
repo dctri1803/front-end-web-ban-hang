@@ -1,16 +1,34 @@
-import { Col, Image, InputNumber, Row } from 'antd'
+import {
+  Col,
+  Image,
+  Row
+} from 'antd'
 import React from 'react'
 import imageProduct from '../../assets/images/test.png'
 import imageProductSmall from '../../assets/images/imgsmall.png'
-import { WrapperAddressProduct,  WrapperInputNumber, WrapperPriceProduct, WrapperPriceTextProduct, WrapperQuantityProduct, WrapperStyleColImage, WrapperStyleImageSmall, WrapperStyleNameProduct, WrapperStyleTextSell } from './style'
-import { StarFilled, PlusOutlined, MinusOutlined, } from '@ant-design/icons';
+import {
+  WrapperAddressProduct,
+  WrapperInputNumber,
+  WrapperPriceProduct,
+  WrapperPriceTextProduct,
+  WrapperQuantityProduct,
+  WrapperStyleColImage,
+  WrapperStyleImageSmall,
+  WrapperStyleNameProduct,
+  WrapperStyleTextSell
+} from './style'
+import {
+  StarFilled,
+  PlusOutlined,
+  MinusOutlined,
+} from '@ant-design/icons';
 import { ButtonComponent } from '../ButtonComponent/ButtonComponent'
 
 export const ProductDetailsComponent = () => {
   const onChange = () => { }
   return (
     <Row style={{ padding: '16px', background: '#fff', borderRadius: '4px', }}>
-      <Col span={10} style={{ borderRight: '1px solid #e5e5e5', paddingRight:'8px', }}>
+      <Col span={10} style={{ borderRight: '1px solid #e5e5e5', paddingRight: '8px', }}>
         <Image src={imageProduct} alt='image product' preview={false} />
         <Row style={{ paddingTop: '10px', justifyContent: 'space-between' }}>
           <WrapperStyleColImage span={4}>
@@ -33,7 +51,7 @@ export const ProductDetailsComponent = () => {
           </WrapperStyleColImage>
         </Row>
       </Col>
-      <Col span={14} style={{ paddingLeft: '10px'}}>
+      <Col span={14} style={{ paddingLeft: '10px' }}>
         <WrapperStyleNameProduct>Kỷ luật bản thân</WrapperStyleNameProduct>
         <div>
           <StarFilled style={{ fontSize: '12px', color: 'rgb(253, 216, 54)' }} />
@@ -49,8 +67,8 @@ export const ProductDetailsComponent = () => {
           <span className='address'>TP. Vinh, P. Hưng Dũng, Nghệ An</span> -
           <span className='change-address'>Đổi địa chỉ</span>
         </WrapperAddressProduct>
-        <div style={{margin :'10px 0 20px', padding: '10px 0', borderTop: '1px solid #e5e5e5', borderBottom: '1px solid #e5e5e5'}}>
-          <div style={{ marginBottom:'10px' }}>Số lượng</div>
+        <div style={{ margin: '10px 0 20px', padding: '10px 0', borderTop: '1px solid #e5e5e5', borderBottom: '1px solid #e5e5e5' }}>
+          <div style={{ marginBottom: '10px' }}>Số lượng</div>
           <WrapperQuantityProduct>
             <button style={{ border: 'none', background: 'transparent' }}>
               <MinusOutlined style={{ color: '#000', fontSize: '20px' }} size={10} />
@@ -61,7 +79,7 @@ export const ProductDetailsComponent = () => {
             </button>
           </WrapperQuantityProduct>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px'}}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <ButtonComponent
             size={40}
             styleButton={{
