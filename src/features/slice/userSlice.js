@@ -1,4 +1,4 @@
-import { createSlice, isPending } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   name: '',
@@ -17,10 +17,15 @@ export const userSlice = createSlice({
         state.email = email;
         state.access_token = access_token;
     },
+    resetUser: (state) => {
+      state.name = '';
+      state.email = '';
+      state.access_token = '';
+  },
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { updateUser } = userSlice.actions
+export const { updateUser, resetUser } = userSlice.actions
 
 export default userSlice.reducer
