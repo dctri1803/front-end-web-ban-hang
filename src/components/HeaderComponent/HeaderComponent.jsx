@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Badge, Col, Popover } from 'antd';
 import { WrapperHeader, WrapperTextHeader, WrapperHeaderAccount, WrapperTextHeaderSmall, WrapperConttentPopup } from './style';
 import { UserOutlined, ShoppingCartOutlined, CaretDownOutlined } from '@ant-design/icons';
@@ -16,10 +16,21 @@ export const HeaderComponent = () => {
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
   const [isLoading, setIsLoading] = useState(false)
+  const [userName, setUserName] = useState('')
+  const [userAvatar, setUserAvatar] = useState('')
 
   const handleNavigateLogin = () => {
     navigate('/sign-in')
   }
+
+  const handleNavigateProfile = () => {
+    navigate('/profile')
+  }
+
+  const handleNavigateHome = () => {
+    navigate('/')
+  }
+
   const handleLogout = async () => {
     setIsLoading(true)
     await UserService.logoutUser()
@@ -27,10 +38,17 @@ export const HeaderComponent = () => {
     setIsLoading(false)
   }
 
+  useEffect(() => {
+    setIsLoading(true)
+    setUserName(user?.name)
+    setUserAvatar(user?.avatar)
+    setIsLoading(false)
+  }, [user?.name, user?.avatar])
+
   const content = (
     <div>
       <WrapperConttentPopup onClick={handleLogout}>Đăng xuất</WrapperConttentPopup>
-      <WrapperConttentPopup>Thông tin người dùng</WrapperConttentPopup>
+      <WrapperConttentPopup onClick={handleNavigateProfile}>Thông tin người dùng</WrapperConttentPopup>
     </div>
   );
 
@@ -38,7 +56,7 @@ export const HeaderComponent = () => {
     <div style={{ width: '100%', display: 'block', background: 'rgb(26, 148, 255)' }}>
       <WrapperHeader >
         <Col span={3}>
-          <WrapperTextHeader>TAKA</WrapperTextHeader>
+          <WrapperTextHeader onClick={handleNavigateHome}>TAKA</WrapperTextHeader>
         </Col>
         <Col span={15}>
           <ButtonInputSearch
@@ -51,11 +69,20 @@ export const HeaderComponent = () => {
         <Col span={6} style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <Loading isPending={isLoading}>
             <WrapperHeaderAccount style={{ padding: '0 30px' }}>
-              <UserOutlined style={{ fontSize: '30px' }} />
-              {user?.name ? (
+              {userAvatar ? (
+                <img src={userAvatar} style={{
+                  height: '46px',
+                  width: '46px',
+                  borderRadius: '50%',
+                  objectFit: 'cover'
+                }} alt='avatar'/>)
+                :
+                (<UserOutlined style={{ fontSize: '30px' }} />
+                )}
+              {user?.access_token ? (
                 <>
                   <Popover content={content} trigger="click">
-                    <div style={{ cursor: 'pointer' }}>{user.name}</div>
+                    <div style={{ cursor: 'pointer' }}>{userName || user.email || 'User'}</div>
                   </Popover>
                 </>
               ) : (

@@ -6,7 +6,7 @@ export const ButtonComponent = ({ size, styleButton, styleTextButton, textButton
         <Button
             style={{
                 ...styleButton,
-                background: disabled ? '#ccc' : 'rgb(255, 57, 59)',
+                background: disabled ? '#ccc' : styleButton?.background,
                 cursor: disabled ? 'not-allowed' : 'pointer'
             }}
             size={size}
