@@ -28,10 +28,10 @@ const SignInPage = () => {
     mutationFn: data => UserService.loginUser(data)
   })
 
-  const { data, isPending, isError, isSuccess } = mutation
+  const { data, isPending} = mutation
 
   useEffect(() => {
-    if (isSuccess) {
+    if (data?.status === 'OK') {
       success();
       navigate('/');
       localStorage.setItem('access_token', JSON.stringify(data?.access_token))
@@ -42,10 +42,10 @@ const SignInPage = () => {
           handleGetDetailsUser(decoded?.id, data?.access_token)
         }
       }
-    } else if (isError) {
+    } else if (data?.status === 'ERR') {
       error()
     }
-  }, [isSuccess, isError])
+  }, [data?.status === 'OK', data?.status === 'ERR'])
 
   const handleGetDetailsUser = async (id, token) => {
     const res = await UserService.getDetailsUser(id, token)

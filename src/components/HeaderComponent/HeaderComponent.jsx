@@ -10,7 +10,7 @@ import { resetUser } from '../../features/slice/userSlice'
 import { Loading } from '../LoadingComponent/Loading';
 
 
-export const HeaderComponent = () => {
+export const HeaderComponent = ({isHiddenSearch = false, isHiddenCart = false}) => {
 
   const navigate = useNavigate()
   const user = useSelector((state) => state.user)
@@ -34,6 +34,7 @@ export const HeaderComponent = () => {
   const handleLogout = async () => {
     setIsLoading(true)
     await UserService.logoutUser()
+    localStorage.removeItem('access_token')
     dispatch(resetUser())
     setIsLoading(false)
   }
@@ -49,23 +50,24 @@ export const HeaderComponent = () => {
     <div>
       <WrapperConttentPopup onClick={handleLogout}>Đăng xuất</WrapperConttentPopup>
       <WrapperConttentPopup onClick={handleNavigateProfile}>Thông tin người dùng</WrapperConttentPopup>
+      {user?.isAdmin && <WrapperConttentPopup onClick={() => { navigate('/systems/admin') }}>Quản lý hệ thống</WrapperConttentPopup>}
     </div>
   );
 
   return (
     <div style={{ width: '100%', display: 'block', background: 'rgb(26, 148, 255)' }}>
-      <WrapperHeader >
+      <WrapperHeader style={{ justifyContent: isHiddenSearch && isHiddenCart ? 'space-between' : 'unset'}}>
         <Col span={3}>
           <WrapperTextHeader onClick={handleNavigateHome}>TAKA</WrapperTextHeader>
         </Col>
-        <Col span={15}>
+        {!isHiddenSearch && (<Col span={15}>
           <ButtonInputSearch
             size='large'
             textButton='Tìm kiếm'
             placeholder="Tên sản phẩm tìm kiếm..."
           // onSearch={onSearch}
           />
-        </Col>
+        </Col>)}
         <Col span={6} style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <Loading isPending={isLoading}>
             <WrapperHeaderAccount style={{ padding: '0 30px' }}>
@@ -75,13 +77,13 @@ export const HeaderComponent = () => {
                   width: '46px',
                   borderRadius: '50%',
                   objectFit: 'cover'
-                }} alt='avatar'/>)
+                }} alt='avatar' />)
                 :
                 (<UserOutlined style={{ fontSize: '30px' }} />
                 )}
               {user?.access_token ? (
                 <>
-                  <Popover content={content} trigger="click">
+                  <Popover content={content} trigger="click" >
                     <div style={{ cursor: 'pointer' }}>{userName || user.email || 'User'}</div>
                   </Popover>
                 </>
@@ -96,14 +98,14 @@ export const HeaderComponent = () => {
               )}
             </WrapperHeaderAccount>
           </Loading>
-          <div>
+          {!isHiddenCart && (
             <div>
               <Badge count={4} size='small'>
                 <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
               </Badge>
               <WrapperTextHeaderSmall>Giỏ hàng</WrapperTextHeaderSmall>
             </div>
-          </div>
+          )}
         </Col>
       </WrapperHeader>
     </div>

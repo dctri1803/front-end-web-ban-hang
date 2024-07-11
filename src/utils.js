@@ -8,7 +8,17 @@ export const isJsonString = (data) => {
 }
 
 export const getBase64 = (img, callback) => {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
-  reader.readAsDataURL(img);
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
 };
+
+export const getItem = (key, label, icon, children, type) => {
+    return {
+        key,
+        label,
+        icon,
+        children,
+        type
+    }
+}
