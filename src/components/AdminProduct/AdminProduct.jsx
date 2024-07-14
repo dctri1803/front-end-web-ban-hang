@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { WrapperHeader, WrapperUploadAvatar } from './style'
-import { Button, Form, message } from 'antd'
-import { PlusOutlined, EditFilled, DeleteFilled } from '@ant-design/icons';
+import { Button, Form, Space } from 'antd'
+import { error, success } from '../../components/Message/Message'
+import { PlusOutlined, EditFilled, DeleteFilled, SearchOutlined } from '@ant-design/icons';
 import { TableComponent } from '../TableComponent/TableComponent';
 import { InputComponent } from '../InputComponent/InputComponent';
 import { getBase64 } from '../../utils';
@@ -19,6 +20,8 @@ export const AdminProduct = () => {
   const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isPendingUpdate, setIsPendingUpdate] = useState(false);
+  const searchInput = useRef(null);
+  const [rowSelected, setRowSelected] = useState('')
   const [stateProduct, setStateProduct] = useState({
     name: '',
     type: '',
@@ -37,7 +40,6 @@ export const AdminProduct = () => {
     description: '',
     image: '',
   })
-  const [rowSelected, setRowSelected] = useState('')
 
   const mutation = useMutation({
     mutationFn: async (data) => {
@@ -46,8 +48,6 @@ export const AdminProduct = () => {
       return res
     },
   })
-
-  const { data, isSuccess, isPending, isError } = mutation
 
   const mutationUpdate = useMutation({
     mutationFn: async (data) => {
@@ -58,20 +58,32 @@ export const AdminProduct = () => {
     },
   })
 
-  const { data: dataUpdated, isSuccess: isSuccessUpdated, isPending: isPendingUpdated, isError: isErrorUpdated } = mutationUpdate
 
   const mutationDeleted = useMutation({
     mutationFn: async (data) => {
       const { id, access_token } = data
-      console.log('data', data)
       const res = await ProductService.deleteProduct(id, access_token)
       return res
     },
-
   })
 
-  const { data: dataDeleted, isSuccess: isSuccessDeleted, isPending: isPendingDeleted, isError: isErrorDeleted } = mutationDeleted
+  const mutationDeletedMany = useMutation({
+    mutationFn: async (data) => {
+      const { access_token, ...ids } = data
+      const res = await ProductService.deleteManyProducts(ids, access_token)
+      return res
+    },
+  })
 
+  const handleDeleteManyProducts = (ids) => {
+    mutationDeletedMany.mutate({ids: ids, access_token:user?.access_token}, {
+      onSettled: () => {
+        queryProducts.refetch()
+      }
+    })
+  }
+
+ 
 
   const getAllProduct = async () => {
     const res = await ProductService.getAllProduct()
@@ -95,16 +107,6 @@ export const AdminProduct = () => {
     return res
   }
 
-  useEffect(() => {
-    form.setFieldsValue(stateDetailsProduct)
-  }, [form, stateDetailsProduct])
-
-  useEffect(() => {
-    if (rowSelected) {
-      fetchGetDetailsProduct(rowSelected)
-    }
-  }, [rowSelected])
-
   const handleDetailsProduct = async () => {
     if (rowSelected) {
       setIsPendingUpdate(true)
@@ -125,21 +127,151 @@ export const AdminProduct = () => {
     )
   }
 
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    // setSearchText(selectedKeys[0]);
+    // setSearchedColumn(dataIndex);
+  };
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    // setSearchText('');
+  };
+
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <InputComponent
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1677ff' : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    // render: (text) =>
+    //   searchedColumn === dataIndex ? (
+    //     <Highlighter
+    //       highlightStyle={{
+    //         backgroundColor: '#ffc069',
+    //         padding: 0,
+    //       }}
+    //       searchWords={[searchText]}
+    //       autoEscape
+    //       textToHighlight={text ? text.toString() : ''}
+    //     />
+    //   ) : (
+    //     text
+    //   ),
+  });
+
   const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
-      sorter: (a, b) => a.name.length - b.name.length
+      sorter: (a, b) => a.name.length - b.name.length,
+      ...getColumnSearchProps('name')
     },
     {
       title: 'Price',
       dataIndex: 'price',
-      sorter: (a, b) => a.price - b.price
+      sorter: (a, b) => a.price - b.price,
+      filters: [
+        {
+          text: '>= 5000',
+          value: '>=',
+        },
+        {
+          text: '<= 5000',
+          value: '<=',
+        },
+      ],
+      onFilter: (value, record) => {
+        if(value === '>=') {
+          return record.price >= 5000
+        } else if (value === '<=') {
+          return record.price <= 5000
+        }
+      },
     },
     {
       title: 'Rating',
       dataIndex: 'rating',
-      sorter: (a, b) => a.rating - b.rating
+      sorter: (a, b) => a.rating - b.rating,
+      filters: [
+        {
+          text: '>= 3',
+          value: '>=3',
+        },
+        {
+          text: '<= 3',
+          value: '<=3',
+        },
+        {
+          text: '>= 4',
+          value: '>=4',
+        },
+        {
+          text: '<= 4',
+          value: '<=4',
+        },
+      ],
+      onFilter: (value, record) => {
+        if(value === '>=3') {
+          return record.rating >= 3
+        } else if (value === '<=3') {
+          return record.rating <= 3
+        } if(value === '>=4') {
+          return record.rating >= 4
+        } else if (value === '<=4') {
+          return record.rating <= 4
+        }
+      },
     },
     {
       title: 'Type',
@@ -153,14 +285,38 @@ export const AdminProduct = () => {
     },
   ];
 
+  const { data, isSuccess, isPending, isError } = mutation
+  const { data: dataUpdated, isSuccess: isSuccessUpdated, isPending: isPendingUpdated, isError: isErrorUpdated } = mutationUpdate
+  const { data: dataDeleted, isSuccess: isSuccessDeleted, isPending: isPendingDeleted, isError: isErrorDeleted } = mutationDeleted
+  const { data: dataDeletedMany, isSuccess: isSuccessDeletedMany, isPending: isPendingDeletedMany, isError: isErrorDeletedMany } = mutationDeletedMany
+
+
+  useEffect(() => {
+    form.setFieldsValue(stateDetailsProduct)
+  }, [form, stateDetailsProduct])
+
+  useEffect(() => {
+    if (rowSelected) {
+      fetchGetDetailsProduct(rowSelected)
+    }
+  }, [rowSelected])
+
   useEffect(() => {
     if (isSuccess && data?.status === 'OK') {
-      message.success()
+      success()
       handleCancel()
     } else if (isError) {
-      message.error()
+      error()
     }
   }, [isSuccess, isError])
+
+  useEffect(() => {
+    if (isSuccessDeletedMany && dataDeletedMany?.status === 'OK') {
+      success()
+    } else if (isErrorDeletedMany) {
+      error()
+    }
+  }, [isSuccessDeletedMany, isErrorDeletedMany])
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -168,19 +324,19 @@ export const AdminProduct = () => {
 
   useEffect(() => {
     if (isSuccessUpdated && dataUpdated?.status === 'OK') {
-      message.success()
+      success()
       handleCloseDrawer()
     } else if (isErrorUpdated) {
-      message.error()
+      error()
     }
   }, [isSuccessUpdated, isErrorUpdated])
 
   useEffect(() => {
     if (isSuccessDeleted && dataDeleted?.status === 'OK') {
-      message.success()
+      success()
       handleCancelDelete()
     } else if (isErrorDeleted) {
-      message.error()
+      error()
     }
   }, [isSuccessDeleted, isErrorDeleted])
 
@@ -248,7 +404,7 @@ export const AdminProduct = () => {
     setIsModalDeleteOpen(false)
   }
 
-  const HandleDeleteProduct = () => {
+  const handleDeleteProduct = () => {
     if (user?.access_token, rowSelected) {
       mutationDeleted.mutate({ id: rowSelected, access_token: user.access_token },
         {
@@ -260,7 +416,7 @@ export const AdminProduct = () => {
         ;
 
     } else {
-      message.error('Access token is missing');
+      error('Access token is missing');
     }
   }
 
@@ -274,7 +430,7 @@ export const AdminProduct = () => {
         }
       );
     } else {
-      message.error('Access token is missing');
+      error('Access token is missing');
     }
     console.log('stateProduct', stateProduct);
   }
@@ -289,7 +445,7 @@ export const AdminProduct = () => {
         }
       );
     } else {
-      message.error('Access token is missing');
+      error('Access token is missing');
     }
   }
 
@@ -307,7 +463,7 @@ export const AdminProduct = () => {
         <Button style={{ height: '150px', width: '150px', borderRadius: '6px', borderStyle: 'dashed' }} onClick={showModal}><PlusOutlined style={{ fontSize: '60px' }} /> </Button>
       </div>
       <div style={{ marginTop: '20px' }} >
-        <TableComponent data={dataTable} isPending={isPendingProduct} columns={columns} onRow={(record, rowIndex) => {
+        <TableComponent handleDeleteMany={handleDeleteManyProducts} data={dataTable} isPending={isPendingProduct} columns={columns} onRow={(record, rowIndex) => {
           return {
             onClick: (event) => {
               setRowSelected(record._id)
@@ -315,7 +471,7 @@ export const AdminProduct = () => {
           };
         }} />
       </div>
-      <ModalComponent title="Tạo sản phẩm" open={isModalOpen} onOk={onFinish} onCancel={handleCancel} okText={'Submit'}>
+      <ModalComponent forceRender title="Tạo sản phẩm" open={isModalOpen} onOk={onFinish} onCancel={handleCancel} okText={'Submit'}>
         <Loading isPending={isPending}>
           <Form
             name="basic"
@@ -576,7 +732,7 @@ export const AdminProduct = () => {
           </Form>
         </Loading>
       </DrawerComponent>
-      <ModalComponent title="Xóa sản phẩm" open={isModalDeleteOpen} onOk={HandleDeleteProduct} onCancel={handleCancelDelete} okText={'Xác nhận'} cancelText={'Hủy'}>
+      <ModalComponent title="Xóa sản phẩm" open={isModalDeleteOpen} onOk={handleDeleteProduct} onCancel={handleCancelDelete} okText={'Xác nhận'} cancelText={'Hủy'}>
         <Loading isPending={isPendingDeleted}>
           <div>Bạn chắc chắn muốn xóa sản phẩm này</div>
         </Loading>
