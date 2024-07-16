@@ -8,9 +8,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as UserService from '../../services/UserService'
 import { resetUser } from '../../features/slice/userSlice'
 import { Loading } from '../LoadingComponent/Loading';
+import { searchProduct } from '../../features/slice/productSlice';
 
 
-export const HeaderComponent = ({isHiddenSearch = false, isHiddenCart = false}) => {
+export const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
 
   const navigate = useNavigate()
   const user = useSelector((state) => state.user)
@@ -18,6 +19,7 @@ export const HeaderComponent = ({isHiddenSearch = false, isHiddenCart = false}) 
   const [isLoading, setIsLoading] = useState(false)
   const [userName, setUserName] = useState('')
   const [userAvatar, setUserAvatar] = useState('')
+  const [search, setSearch] = useState('')
 
   const handleNavigateLogin = () => {
     navigate('/sign-in')
@@ -54,9 +56,17 @@ export const HeaderComponent = ({isHiddenSearch = false, isHiddenCart = false}) 
     </div>
   );
 
+  const onSearchChange = (e) => {
+    setSearch(e.target.value);
+};
+
+const onSearchClick = () => {
+    dispatch(searchProduct(search));
+};
+
   return (
     <div style={{ width: '100%', display: 'block', background: 'rgb(26, 148, 255)' }}>
-      <WrapperHeader style={{ justifyContent: isHiddenSearch && isHiddenCart ? 'space-between' : 'unset'}}>
+      <WrapperHeader style={{ justifyContent: isHiddenSearch && isHiddenCart ? 'space-between' : 'unset' }}>
         <Col span={3}>
           <WrapperTextHeader onClick={handleNavigateHome}>TAKA</WrapperTextHeader>
         </Col>
@@ -65,7 +75,8 @@ export const HeaderComponent = ({isHiddenSearch = false, isHiddenCart = false}) 
             size='large'
             textButton='Tìm kiếm'
             placeholder="Tên sản phẩm tìm kiếm..."
-          // onSearch={onSearch}
+            onSearch={onSearchChange}
+            onButtonClick={onSearchClick}
           />
         </Col>)}
         <Col span={6} style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
@@ -99,7 +110,7 @@ export const HeaderComponent = ({isHiddenSearch = false, isHiddenCart = false}) 
             </WrapperHeaderAccount>
           </Loading>
           {!isHiddenCart && (
-            <div>
+            <div onClick={() => navigate('/order')} style={{cursor:'pointer'}}>
               <Badge count={4} size='small'>
                 <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
               </Badge>

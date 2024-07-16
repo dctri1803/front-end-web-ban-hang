@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { WrapperHeader, WrapperUploadAvatar } from './style'
-import { Button, Form, Space } from 'antd'
+import { Button, Form, Select, Space } from 'antd'
 import { error, success } from '../../components/Message/Message'
 import { PlusOutlined, EditFilled, DeleteFilled, SearchOutlined } from '@ant-design/icons';
 import { TableComponent } from '../TableComponent/TableComponent';
 import { InputComponent } from '../InputComponent/InputComponent';
-import { getBase64 } from '../../utils';
+import { getBase64, renderOptions } from '../../utils';
 import { useMutation, useQuery } from '@tanstack/react-query'
 import * as ProductService from '../../services/ProductService'
 import { useSelector } from 'react-redux';
@@ -22,6 +22,7 @@ export const AdminProduct = () => {
   const [isPendingUpdate, setIsPendingUpdate] = useState(false);
   const searchInput = useRef(null);
   const [rowSelected, setRowSelected] = useState('')
+  const [typeSelected, setTypeSelected] = useState('')
   const [stateProduct, setStateProduct] = useState({
     name: '',
     type: '',
@@ -58,7 +59,6 @@ export const AdminProduct = () => {
     },
   })
 
-
   const mutationDeleted = useMutation({
     mutationFn: async (data) => {
       const { id, access_token } = data
@@ -76,17 +76,20 @@ export const AdminProduct = () => {
   })
 
   const handleDeleteManyProducts = (ids) => {
-    mutationDeletedMany.mutate({ids: ids, access_token:user?.access_token}, {
+    mutationDeletedMany.mutate({ ids: ids, access_token: user?.access_token }, {
       onSettled: () => {
         queryProducts.refetch()
       }
     })
   }
 
- 
-
   const getAllProduct = async () => {
     const res = await ProductService.getAllProduct()
+    return res
+  }
+
+  const fetchGetAllTypeProduct = async () => {
+    const res = await ProductService.getAllType()
     return res
   }
 
@@ -117,6 +120,8 @@ export const AdminProduct = () => {
   }
 
   const queryProducts = useQuery({ queryKey: ['products'], queryFn: getAllProduct, })
+  const queryTypeProducts = useQuery({ queryKey: ['type-products'], queryFn: fetchGetAllTypeProduct, })
+  console.log('queryTypeProducts', queryTypeProducts)
   const { isPending: isPendingProduct, data: products } = queryProducts
   const renderAction = () => {
     return (
@@ -232,7 +237,7 @@ export const AdminProduct = () => {
         },
       ],
       onFilter: (value, record) => {
-        if(value === '>=') {
+        if (value === '>=') {
           return record.price >= 5000
         } else if (value === '<=') {
           return record.price <= 5000
@@ -262,11 +267,11 @@ export const AdminProduct = () => {
         },
       ],
       onFilter: (value, record) => {
-        if(value === '>=3') {
+        if (value === '>=3') {
           return record.rating >= 3
         } else if (value === '<=3') {
           return record.rating <= 3
-        } if(value === '>=4') {
+        } if (value === '>=4') {
           return record.rating >= 4
         } else if (value === '<=4') {
           return record.rating <= 4
@@ -308,7 +313,7 @@ export const AdminProduct = () => {
     } else if (isError) {
       error()
     }
-  }, [isSuccess, isError])
+  }, [isSuccess, isError,])
 
   useEffect(() => {
     if (isSuccessDeletedMany && dataDeletedMany?.status === 'OK') {
@@ -456,6 +461,18 @@ export const AdminProduct = () => {
     }
   })
 
+  const handleChangeSelected = (value) => {
+    if (value !== 'add_type') {
+      setTypeSelected(value)
+      setStateProduct({
+        ...stateProduct,
+        type: value
+      })
+    } else {
+      setTypeSelected(value)
+    }
+  }
+
   return (
     <div>
       <WrapperHeader>Quản lý sản phẩm</WrapperHeader>
@@ -514,7 +531,13 @@ export const AdminProduct = () => {
                 },
               ]}
             >
-              <InputComponent value={stateProduct.type} onChange={handleOnChange} name="type" />
+              <Select
+                name="type"
+                value={stateProduct.type}
+                onChange={handleChangeSelected}
+                options={renderOptions(queryTypeProducts?.data?.data)}
+              />
+              {typeSelected === 'add_type' && <InputComponent value={stateProduct.type} onChange={handleOnChange} name="type"/>}
             </Form.Item>
 
             <Form.Item
@@ -548,7 +571,7 @@ export const AdminProduct = () => {
               name="rating"
               rules={[
                 {
-                  required: true,
+                  required: false,
                   message: 'Please input your rating!',
                 },
               ]}
@@ -561,7 +584,7 @@ export const AdminProduct = () => {
               name="description"
               rules={[
                 {
-                  required: true,
+                  required: false,
                   message: 'Please input your Description!',
                 },
               ]}
@@ -574,7 +597,7 @@ export const AdminProduct = () => {
               name="image"
               rules={[
                 {
-                  required: true,
+                  required: false,
                   message: 'Please input your Image!',
                 },
               ]}

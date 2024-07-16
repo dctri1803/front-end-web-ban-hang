@@ -14,13 +14,24 @@ export const ButtonInputSearch = (props) => {
         backgroundColorInput= '#fff',
         backgroundColorButton = 'rgb(13, 92, 182)',
         colorButton = '#fff',
+        onSearch,
+        onButtonClick
     } = props
+
+    const handleInputChange = (e) => {
+        if (onSearch) {
+            onSearch(e);  
+        }
+    }
+
     return (
         <div style={{ display: 'flex' }}>
             <InputComponent
                 size={size}
                 placeholder={placeholder}
                 style={{ border: !border && 'none', background: backgroundColorInput }}
+                onChange={handleInputChange}
+                {...props}
             />
             <ButtonComponent
                 size={size}
@@ -28,7 +39,8 @@ export const ButtonInputSearch = (props) => {
                 style={{ border: !border && 'none', background: backgroundColorButton }}
                 textButton={textButton}
                 styleTextButton={{color: colorButton}}
-                >
+                onClick={onButtonClick}
+            >
             </ButtonComponent>
         </div>
     )
