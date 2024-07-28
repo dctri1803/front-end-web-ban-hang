@@ -15,6 +15,7 @@ export const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }
 
   const navigate = useNavigate()
   const user = useSelector((state) => state.user)
+  const order = useSelector((state) => state.order)
   const dispatch = useDispatch()
   const [isLoading, setIsLoading] = useState(false)
   const [userName, setUserName] = useState('')
@@ -28,6 +29,20 @@ export const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }
   const handleNavigateProfile = () => {
     navigate('/profile')
   }
+
+  const handleNavigateChangePassord = () => {
+    navigate('/change-password')
+  }
+
+  const handleNavigateMyOrder = () => {
+    navigate(`/my-order`, {
+      state: {
+        id: user?.id,
+        token: user?.access_token
+      }
+    })
+  }
+
 
   const handleNavigateHome = () => {
     navigate('/')
@@ -50,19 +65,21 @@ export const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }
 
   const content = (
     <div>
-      <WrapperConttentPopup onClick={handleLogout}>Đăng xuất</WrapperConttentPopup>
       <WrapperConttentPopup onClick={handleNavigateProfile}>Thông tin người dùng</WrapperConttentPopup>
+      <WrapperConttentPopup onClick={handleNavigateChangePassord}>Đổi mật khẩu</WrapperConttentPopup>
+      <WrapperConttentPopup onClick={handleNavigateMyOrder}>Đơn hàng của tôi</WrapperConttentPopup>
       {user?.isAdmin && <WrapperConttentPopup onClick={() => { navigate('/systems/admin') }}>Quản lý hệ thống</WrapperConttentPopup>}
+      <WrapperConttentPopup onClick={handleLogout}>Đăng xuất</WrapperConttentPopup>
     </div>
   );
 
   const onSearchChange = (e) => {
     setSearch(e.target.value);
-};
+  };
 
-const onSearchClick = () => {
+  const onSearchClick = () => {
     dispatch(searchProduct(search));
-};
+  };
 
   return (
     <div style={{ width: '100%', display: 'block', background: 'rgb(26, 148, 255)' }}>
@@ -110,8 +127,8 @@ const onSearchClick = () => {
             </WrapperHeaderAccount>
           </Loading>
           {!isHiddenCart && (
-            <div onClick={() => navigate('/order')} style={{cursor:'pointer'}}>
-              <Badge count={4} size='small'>
+            <div onClick={() => navigate('/order')} style={{ cursor: 'pointer' }}>
+              <Badge count={order?.orderItems?.length} size='small'>
                 <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
               </Badge>
               <WrapperTextHeaderSmall>Giỏ hàng</WrapperTextHeaderSmall>

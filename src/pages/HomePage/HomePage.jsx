@@ -77,7 +77,7 @@ export const HomePage = () => {
         </WrapperTypeProduct>
       </div>
       <div className="body" style={{ width: '100%', background: '#efefef' }}>
-        <div id="container" style={{ margin: '0 auto', height: '1052px', width: '1270px' }}>
+        <div id="container" style={{ margin: '0 auto', height: 'fit-content', width: '1270px' }}>
           <SliderComponent arrImages={[slider1, slider2, slider3]} />
           <Loading isPending={isLoading}>
             <WrapperProducts>

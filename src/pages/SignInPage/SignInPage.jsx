@@ -8,7 +8,7 @@ import {
   EyeOutlined,
   EyeInvisibleOutlined,
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import * as UserService from '../../services/UserService'
 import { Loading } from '../../components/LoadingComponent/Loading'
@@ -19,6 +19,7 @@ import { updateUser } from '../../features/slice/userSlice'
 
 const SignInPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [email, setEmail] = useState('admin@gmail.com');
   const [password, setPassword] = useState('123456');
@@ -31,19 +32,23 @@ const SignInPage = () => {
   const { data, isPending} = mutation
 
   useEffect(() => {
+    console.log('location', location)
     if (data?.status === 'OK') {
-      success();
-      navigate('/');
+      if(location?.state) {
+        navigate(location?.state)
+      } else {
+        navigate('/');
+      }
+      success('Đăng nhập thành công!');
       localStorage.setItem('access_token', JSON.stringify(data?.access_token))
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
-        console.log(decoded);
         if (decoded?.id) {
           handleGetDetailsUser(decoded?.id, data?.access_token)
         }
       }
     } else if (data?.status === 'ERR') {
-      error()
+      error('Đăng nhập thất bại!')
     }
   }, [data?.status === 'OK', data?.status === 'ERR'])
 

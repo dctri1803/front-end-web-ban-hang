@@ -51,6 +51,15 @@ export const updateUser = async (id, data, access_token) => {
     return res.data
 }
 
+export const changePassword = async (id, data, access_token) => {
+    const res = await axiosJWT.put(`${process.env.REACT_APP_URL_BACKEND}/user/change-password/${id}`, data, {
+        headers: {
+            token: `Bearer ${access_token}`
+        }
+    })
+    return res.data
+}
+
 export const deleteUser = async (id, access_token) => {
     const res = await axiosJWT.delete(`${process.env.REACT_APP_URL_BACKEND}/user/delete-user/${id}`, {
         headers: {

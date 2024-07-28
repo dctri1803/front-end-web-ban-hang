@@ -10,6 +10,7 @@ import { message, Button } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 import { updateUser } from '../../features/slice/userSlice'
 import { getBase64 } from '../../utils'
+import { error, success } from '../../components/Message/Message'
 
 export const ProfilePage = () => {
   const user = useSelector((state) => state.user)
@@ -17,6 +18,7 @@ export const ProfilePage = () => {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [address, setAddress] = useState('')
+  const [city, setCity] = useState('')
   const [avatar, setAvatar] = useState('')
 
   const dispatch = useDispatch()
@@ -31,10 +33,10 @@ export const ProfilePage = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      message.success()
+      success('Cập nhật thành công')
       handleGetDetailsUser(user?.id, user?.access_token)
     } else if (isError) {
-      message.error()
+      error('Cập nhật thất bại')
     }
   }, [isSuccess, isError])
 
@@ -43,6 +45,7 @@ export const ProfilePage = () => {
     setEmail(user?.email)
     setPhone(user?.phone)
     setAddress(user?.address)
+    setCity(user?.city)
     setAvatar(user?.avatar)
   }, [user])
 
@@ -64,8 +67,9 @@ export const ProfilePage = () => {
       email,
       phone,
       address,
+      city,
       avatar,
-      access_token: user?.access_token
+      access_token: user?.access_token,
     })
   }
 
@@ -149,6 +153,22 @@ export const ProfilePage = () => {
           <WrapperInput>
             <WrapperLabel htmlFor='address'>Địa chỉ</WrapperLabel>
             <InputForm id='address' style={{ width: '300px' }} value={address} onChange={(e) => setAddress(e.target.value)} />
+            <ButtonComponent
+              onClick={handleUpdate}
+              size={40}
+              styleButton={{
+                height: '30px',
+                width: 'fit-content',
+                borderRadius: '4px',
+                background: '#fff',
+              }}
+              textButton={'Cập nhật'}
+              styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
+            />
+          </WrapperInput>
+          <WrapperInput>
+            <WrapperLabel htmlFor='city'>Thành phố</WrapperLabel>
+            <InputForm id='city' style={{ width: '300px' }} value={city} onChange={(e) => setCity(e.target.value)} />
             <ButtonComponent
               onClick={handleUpdate}
               size={40}

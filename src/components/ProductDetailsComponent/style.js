@@ -79,3 +79,9 @@ export const WrapperInputNumber = styled(InputNumber)`
         }
     };
 `
+
+export const WrapperDescriptionProduct = styled.div`
+  margin-top: 20px;
+  font-size: 14px;
+  line-height: 1.5;
+`;

@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import imageProductSmall from '../../assets/images/imgsmall.png'
 import {
   WrapperAddressProduct,
+  WrapperDescriptionProduct,
   WrapperInputNumber,
   WrapperPriceProduct,
   WrapperPriceTextProduct,
@@ -25,31 +26,39 @@ import { ButtonComponent } from '../ButtonComponent/ButtonComponent'
 import * as ProductService from '../../services/ProductService'
 import { useQuery } from '@tanstack/react-query'
 import { Loading } from '../LoadingComponent/Loading'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { addOrderProduct } from '../../features/slice/orderSlice';
+import { convertPrice } from '../../utils';
+import CommentComponent from '../CommentComponent/CommentComponent';
 
 export const ProductDetailsComponent = ({ idProduct }) => {
   const [numProduct, setNumProduct] = useState(1)
-  const user = useSelector((state)=> state.user)
-  console.log('user', user)
-  const onChange = (value) => {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const user = useSelector((state) => state.user)
+  const dispatch = useDispatch()
+
+  const onChange = (value) => { 
     setNumProduct(Number(value))
-  }
+}
 
   const fetchGetDetailsProduct = async ({ queryKey }) => {
     const [_, id] = queryKey;
     const res = await ProductService.getDetailsProduct(id)
     return res.data
   }
-
-  const handleChangeCount = (type) => {
-    if(numProduct > 0 ) {
-      
-      if(type==='increase') {
-        setNumProduct(numProduct + 1)
-      }else if (type === 'decrease' && numProduct > 1){
-        setNumProduct(numProduct - 1)
+  const { isPending, data: productDetails } = useQuery({ queryKey: ['product-details', idProduct], queryFn: fetchGetDetailsProduct, enabled: !!idProduct })
+  const handleChangeCount = (type, limited) => {
+    if(type === 'increase') {
+      if(!limited) {
+          setNumProduct(numProduct + 1)
       }
-    }
+  }else {
+      if(!limited) {
+          setNumProduct(numProduct - 1)
+      }
+  }
   }
 
   const renderStars = (num) => {
@@ -59,7 +68,30 @@ export const ProductDetailsComponent = ({ idProduct }) => {
     }
     return stars;
   };
-  const { isPending, data: productDetails } = useQuery({ queryKey: ['product-details', idProduct], queryFn: fetchGetDetailsProduct, enabled: !!idProduct })
+
+  const handleAddOrderProduct = () => {
+    if (!user?.id) {
+      navigate('/sign-in', { state: location?.pathname })
+    } else {
+      dispatch(addOrderProduct({
+        orderItem: {
+          name: productDetails?.name,
+          amount: numProduct,
+          countInStock: productDetails?.countInStock,
+          image: productDetails?.image,
+          price: productDetails?.price,
+          product: productDetails?._id,
+          discount: productDetails?.discount
+        }
+      }))
+    }
+  }
+
+  const handleBuyOrderProduct = async () => {
+    await handleAddOrderProduct()
+    navigate('/order')
+  }
+  console.log('productDetails', productDetails, user)
   return (
     <Loading isPending={isPending}>
       <Row style={{ padding: '16px', background: '#fff', borderRadius: '4px', }}>
@@ -93,7 +125,7 @@ export const ProductDetailsComponent = ({ idProduct }) => {
             <WrapperStyleTextSell>| Đã bán 1000+</WrapperStyleTextSell>
           </div>
           <WrapperPriceProduct>
-            <WrapperPriceTextProduct>{productDetails?.price.toLocaleString()} đ</WrapperPriceTextProduct>
+            <WrapperPriceTextProduct>{convertPrice(productDetails?.price)} đ</WrapperPriceTextProduct>
           </WrapperPriceProduct>
           <WrapperAddressProduct>
             <span>Giao đến </span>
@@ -101,16 +133,19 @@ export const ProductDetailsComponent = ({ idProduct }) => {
             <span className='change-address'>Đổi địa chỉ</span>
           </WrapperAddressProduct>
           <div style={{ margin: '10px 0 20px', padding: '10px 0', borderTop: '1px solid #e5e5e5', borderBottom: '1px solid #e5e5e5' }}>
-            <div style={{ marginBottom: '10px' }}>Số lượng</div>
+            <div style={{ marginBottom: '10px' }}>Số lượng: {productDetails?.countInStock}</div>
             <WrapperQuantityProduct>
-              <button style={{ border: 'none', background: 'transparent', cursor:'pointer' }} onClick={() => handleChangeCount('decrease')}>
-                <MinusOutlined style={{ color: '#000', fontSize: '20px' }} size={10} />
+              <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }} onClick={() => handleChangeCount('decrease', numProduct === 1)}>
+                <MinusOutlined style={{ color: '#000', fontSize: '20px' }} />
               </button>
-              <WrapperInputNumber onChange={onChange} value={numProduct} size='small' />
-              <button style={{ border: 'none', background: 'transparent', cursor:'pointer' }} onClick={() => handleChangeCount('increase')} >
-                <PlusOutlined style={{ color: '#000', fontSize: '20px' }} size={10} />
+              <WrapperInputNumber onChange={onChange} defaultValue={1} max={productDetails?.countInStock} min={1} value={numProduct} size="small" />
+              <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }} onClick={() => handleChangeCount('increase', numProduct === productDetails?.countInStock)}>
+                <PlusOutlined style={{ color: '#000', fontSize: '20px' }} />
               </button>
             </WrapperQuantityProduct>
+            <WrapperDescriptionProduct>
+              Chi tiết sản phẩm: <br /> {productDetails?.description}
+            </WrapperDescriptionProduct>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <ButtonComponent
@@ -122,10 +157,10 @@ export const ProductDetailsComponent = ({ idProduct }) => {
                 border: 'none',
                 borderRadius: '4px'
               }}
-              textButton={'Chọn mua'}
               styleTextButton={{ color: '#fff', fontSize: '15px', fontWeight: '700' }}
+              textButton={'Mua ngay'}
+              onClick={handleBuyOrderProduct}
             ></ButtonComponent>
-
             <ButtonComponent
               size={40}
               styleButton={{
@@ -135,12 +170,14 @@ export const ProductDetailsComponent = ({ idProduct }) => {
                 border: '1px solid rgb(13, 92, 182)',
                 borderRadius: '4px'
               }}
-              textButton={'Mua trước trả sau'}
+              textButton={'Thêm vào giỏ hàng'}
+              onClick={handleAddOrderProduct}
               styleTextButton={{ color: 'rgb (13, 92, 182)', fontSize: '15px' }}
             ></ButtonComponent>
           </div>
         </Col>
       </Row>
+      <CommentComponent productId={idProduct} /> {/* Add CommentComponent here */}
     </Loading>
   )
 }

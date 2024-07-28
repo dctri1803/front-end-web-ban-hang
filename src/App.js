@@ -40,7 +40,6 @@ function App() {
       const { decoded } = handleDecoded()
       if (decoded?.exp < currentTime.getTime() / 1000) {
         const data = await UserService.refreshToken()
-        console.log('data', data);
         config.headers['token'] = `Bearer ${data?.access_token}`
       }
       return config;

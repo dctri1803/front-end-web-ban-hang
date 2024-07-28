@@ -31,10 +31,10 @@ const SignUpPage = () => {
 
   useEffect(() => {
     if(isSuccess) {
-      success();
+      success('Đăng kí thành công! ');
       handleNavigateLogin()
     } else if(isError) {
-      error();
+      error('Đăng kí thất bại! ');
     }
   },[isSuccess, isError])
 
