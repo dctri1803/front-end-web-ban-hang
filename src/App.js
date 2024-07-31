@@ -25,11 +25,11 @@ function App() {
   }, [])
 
   const handleDecoded = () => {
-    let storageData = localStorage.getItem('access_token')
+    let storageData = user?.access_token || localStorage.getItem('access_token')
     let decoded = {}
-    if (storageData && isJsonString(storageData)) {
+    if (storageData && isJsonString(storageData) && !user?.access_token) {
       storageData = JSON.parse(storageData)
-      decoded = jwtDecode(storageData);
+      decoded = jwtDecode(storageData)
     }
     return { decoded, storageData }
   }
@@ -39,12 +39,13 @@ function App() {
       const currentTime = new Date()
       const { decoded } = handleDecoded()
       let storageRefreshToken = localStorage.getItem('refresh_token')
-      const decodedRefreshToken = JSON.parse(storageRefreshToken)
+      const refreshToken = JSON.parse(storageRefreshToken)
+      const decodedRefreshToken = jwtDecode(refreshToken)
       if (decoded?.exp < currentTime.getTime() / 1000) {
-        if (decodedRefreshToken < currentTime.getTime() / 1000) {
-          const data = await UserService.refreshToken()
+        if (decodedRefreshToken?.exp > currentTime.getTime() / 1000) {
+          const data = await UserService.refreshToken(refreshToken)
           config.headers['token'] = `Bearer ${data?.access_token}`
-        }else {
+        } else {
           dispatch(resetUser())
         }
       }

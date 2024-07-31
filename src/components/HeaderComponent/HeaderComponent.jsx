@@ -96,7 +96,7 @@ export const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }
             onButtonClick={onSearchClick}
           />
         </Col>)}
-        <Col span={6} style={{ display: '-webkit-box', gap: 20, alignItems: 'center' }}>
+        <Col span={6} style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <Loading isPending={isLoading}>
             <WrapperHeaderAccount style={{ padding: '0 30px' }}>
               {userAvatar ? (

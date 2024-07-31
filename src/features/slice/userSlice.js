@@ -10,7 +10,7 @@ const initialState = {
   access_token: '',
   id: '',
   isAdmin: false,
-  refreshToken: '',
+  refreshToken: ''
 }
 
 export const userSlice = createSlice({

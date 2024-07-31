@@ -14,15 +14,15 @@ import * as UserService from '../../services/UserService'
 import { Loading } from '../../components/LoadingComponent/Loading'
 import { error, success } from '../../components/Message/Message'
 import { jwtDecode } from "jwt-decode";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { updateUser } from '../../features/slice/userSlice'
 
 const SignInPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isShowPassword, setIsShowPassword] = useState(false);
-  const [email, setEmail] = useState('admin@gmail.com');
-  const [password, setPassword] = useState('123456');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const dispatch = useDispatch();
 
   const mutation = useMutation({
@@ -113,7 +113,7 @@ const SignInPage = () => {
               styleTextButton={{ color: '#fff', fontSize: '15px', fontWeight: '700' }}
             />
           </Loading>
-          <p><WrapperTextLight onClick={()=>navigate('/forgot-password')}>Quên mật khẩu</WrapperTextLight></p>
+          <p><WrapperTextLight onClick={() => navigate('/forgot-password')}>Quên mật khẩu</WrapperTextLight></p>
           <p>Chưa có tài khoản? <WrapperTextLight onClick={handleNavigateSignUp}> Tạo tài khoản</WrapperTextLight> </p>
         </WrapperContainerLeft>
         <WrapperContainerRight>
