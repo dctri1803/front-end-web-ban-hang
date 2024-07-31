@@ -13,6 +13,7 @@ import OrderSucess from "../pages/OrderSuccess/OrderSuccess";
 import MyOrderPage from "../pages/MyOrderPage/MyOrderPage";
 import DetailsOrderPage from "../pages/DetailsOrderPage/DetailsOrderPage";
 import { ChangePasswordPage } from "../pages/ChangePasswordPage/ChangePasswordPage";
+import { ForgotPasswordPage } from "../pages/ForgotPasswordPage/ForgotPasswordPage";
 
 export const routes = [
     {
@@ -68,6 +69,11 @@ export const routes = [
     {
         path: '/change-password',
         page: ChangePasswordPage,
+        isShowHeader: true,
+    },
+    {
+        path: '/forgot-password',
+        page: ForgotPasswordPage,
         isShowHeader: true,
     },
     {

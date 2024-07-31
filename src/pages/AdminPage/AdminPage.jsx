@@ -5,6 +5,7 @@ import { getItem } from '../../utils';
 import { HeaderComponent } from '../../components/HeaderComponent/HeaderComponent';
 import { AdminUser } from '../../components/AdminUser/AdminUser';
 import { AdminProduct } from '../../components/AdminProduct/AdminProduct';
+import { AdminOrder } from '../../components/AdminOrder/AdminOrder';
 
 const AdminPage = () => {
 
@@ -18,6 +19,9 @@ const AdminPage = () => {
       case 'product':
         return (<AdminProduct />)
 
+      case 'order':
+        return (<AdminOrder/>)
+
       default:
         return (<h1> Wellcome to admin page </h1>)
     }
@@ -27,6 +31,7 @@ const AdminPage = () => {
   const items = [
     getItem('user', 'Người dùng', <UserOutlined />),
     getItem('product', 'Sản phẩm', <AppstoreOutlined />),
+    getItem('order', 'Đơn hàng', <AppstoreOutlined />),
   ]
 
   const onClick = (e) => {

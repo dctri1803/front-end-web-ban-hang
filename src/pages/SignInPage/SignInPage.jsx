@@ -29,18 +29,19 @@ const SignInPage = () => {
     mutationFn: data => UserService.loginUser(data)
   })
 
-  const { data, isPending} = mutation
+  const { data, isPending } = mutation
 
   useEffect(() => {
     console.log('location', location)
     if (data?.status === 'OK') {
-      if(location?.state) {
+      if (location?.state) {
         navigate(location?.state)
       } else {
         navigate('/');
       }
       success('Đăng nhập thành công!');
       localStorage.setItem('access_token', JSON.stringify(data?.access_token))
+      localStorage.setItem('refresh_token', JSON.stringify(data?.refresh_token))
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
         if (decoded?.id) {
@@ -53,8 +54,10 @@ const SignInPage = () => {
   }, [data?.status === 'OK', data?.status === 'ERR'])
 
   const handleGetDetailsUser = async (id, token) => {
+    const storage = localStorage.getItem('refresh_token')
+    const refreshToken = JSON.parse(storage)
     const res = await UserService.getDetailsUser(id, token)
-    dispatch(updateUser({...res?.data, access_token: token}))
+    dispatch(updateUser({ ...res?.data, access_token: token, refreshToken }))
   }
 
   const handleNavigateSignUp = () => {
@@ -110,7 +113,7 @@ const SignInPage = () => {
               styleTextButton={{ color: '#fff', fontSize: '15px', fontWeight: '700' }}
             />
           </Loading>
-          <p><WrapperTextLight>Quên mật khẩu</WrapperTextLight></p>
+          <p><WrapperTextLight onClick={()=>navigate('/forgot-password')}>Quên mật khẩu</WrapperTextLight></p>
           <p>Chưa có tài khoản? <WrapperTextLight onClick={handleNavigateSignUp}> Tạo tài khoản</WrapperTextLight> </p>
         </WrapperContainerLeft>
         <WrapperContainerRight>

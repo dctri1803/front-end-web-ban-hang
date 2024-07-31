@@ -1,5 +1,9 @@
 import styled from "styled-components";
 
+export const CommentHeader = styled.h3`
+    padding: 10px 0px 0px 20px;
+`
+
 export  const CommentWrapper = styled.div`
   padding: 10px;
   background: #f9f9f9;

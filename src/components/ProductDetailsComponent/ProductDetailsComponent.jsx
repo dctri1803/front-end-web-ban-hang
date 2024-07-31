@@ -122,7 +122,7 @@ export const ProductDetailsComponent = ({ idProduct }) => {
           <WrapperStyleNameProduct>{productDetails?.name}</WrapperStyleNameProduct>
           <div>
             {renderStars(productDetails?.rating)}
-            <WrapperStyleTextSell>| Đã bán 1000+</WrapperStyleTextSell>
+            <WrapperStyleTextSell>| Đã bán {productDetails?.selled}</WrapperStyleTextSell>
           </div>
           <WrapperPriceProduct>
             <WrapperPriceTextProduct>{convertPrice(productDetails?.price)} đ</WrapperPriceTextProduct>

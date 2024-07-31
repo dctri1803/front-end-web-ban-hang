@@ -37,7 +37,7 @@ export const getOrderByUserId = async (id,access_token) => {
     return res.data
   }
   
-  export const getAllOrder = async (access_token) => {
+  export const getAllOrders = async (access_token) => {
     const res = await axiosJWT.get(`${process.env.REACT_APP_URL_BACKEND}/order/get-all-order`, {
         headers: {
             token: `Bearer ${access_token}`,
@@ -45,3 +45,12 @@ export const getOrderByUserId = async (id,access_token) => {
     })
     return res.data
   }
+
+  export const updateOrder = async (orderId, data, access_token) => {
+    const response = await axiosJWT.patch(`${process.env.REACT_APP_URL_BACKEND}/order/update-order-status/${orderId}`, data, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    });
+    return response.data;
+};

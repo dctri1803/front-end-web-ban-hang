@@ -30,9 +30,11 @@ export const getDetailsUser = async (id, access_token) => {
     return res.data
 }
 
-export const refreshToken = async () => {
+export const refreshToken = async (refreshToken) => {
     const res = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/user/refresh-token`, {
-        withCredentials: true
+        headers: {
+            token: `Bearer ${refreshToken}`
+        }
     })
     return res.data
 }
@@ -77,3 +79,13 @@ export const deleteManyUsers = async (data, access_token) => {
     })
     return res.data
 }
+
+export const sendPasswordResetLink = async (email) => {
+    const res = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/user/forgot-password`, { email });
+    return res.data;
+};
+
+export const resetPassword = async (email, otp, newPassword) => {
+    const res = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/user/reset-password`, { email, otp, newPassword });
+    return res.data;
+};

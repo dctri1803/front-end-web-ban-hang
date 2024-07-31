@@ -42,3 +42,12 @@ export const replyToComment = async (data, access_token) => {
     });
     return res.data;
 };
+
+export const deleteComment = async (commentId, access_token) => {
+    const res = await axiosJWT.delete(`${process.env.REACT_APP_URL_BACKEND}/comment/delete/${commentId}`, {
+        headers: {
+            token: `Bearer ${access_token}`
+        }
+    });
+    return res.data;
+};
