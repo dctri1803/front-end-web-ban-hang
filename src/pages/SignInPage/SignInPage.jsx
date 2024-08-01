@@ -14,21 +14,18 @@ import * as UserService from '../../services/UserService'
 import { Loading } from '../../components/LoadingComponent/Loading'
 import { error, success } from '../../components/Message/Message'
 import { jwtDecode } from "jwt-decode";
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { updateUser } from '../../features/slice/userSlice'
-
 const SignInPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isShowPassword, setIsShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@gmail.com');
+  const [password, setPassword] = useState('123456');
   const dispatch = useDispatch();
-
   const mutation = useMutation({
     mutationFn: data => UserService.loginUser(data)
   })
-
   const { data, isPending } = mutation
 
   useEffect(() => {
@@ -41,7 +38,6 @@ const SignInPage = () => {
       }
       success('Đăng nhập thành công!');
       localStorage.setItem('access_token', JSON.stringify(data?.access_token))
-      localStorage.setItem('refresh_token', JSON.stringify(data?.refresh_token))
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
         if (decoded?.id) {
@@ -54,24 +50,19 @@ const SignInPage = () => {
   }, [data?.status === 'OK', data?.status === 'ERR'])
 
   const handleGetDetailsUser = async (id, token) => {
-    const storage = localStorage.getItem('refresh_token')
-    const refreshToken = JSON.parse(storage)
     const res = await UserService.getDetailsUser(id, token)
-    dispatch(updateUser({ ...res?.data, access_token: token, refreshToken }))
+    dispatch(updateUser({ ...res?.data, access_token: token }))
   }
 
   const handleNavigateSignUp = () => {
     navigate('/sign-up')
   }
-
   const handleSignIn = () => {
     mutation.mutate({
       email,
       password
     })
   }
-
-
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0, 0, 0, 0.53)', height: '100vh' }}>
       <div style={{ width: '800px', height: '527px', borderRadius: '20px', background: '#fff', display: 'flex' }}>
@@ -124,5 +115,4 @@ const SignInPage = () => {
     </div>
   )
 }
-
-export default SignInPage
+export default SignInPage          
