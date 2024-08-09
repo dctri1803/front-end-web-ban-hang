@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { convertPrice } from '../../utils';
 
 export const CardComponent = (props) => {
-  const {countInStock, description, image, name, price, rating, type, selled, discount, id} = props
+  const {countInStock, description, image, name, price, rating, type, sold, discount, id} = props
   const navigate = useNavigate()
   const handleDetailsProduct = (id) => {
     navigate(`/product-details/${id}`)
@@ -23,7 +23,7 @@ export const CardComponent = (props) => {
       <StyleNameProduct>{name}</StyleNameProduct>
       <WrapperReportText>
         <span>{rating}</span> <StarFilled style={{ fontSize: '12px', color:'rgb(253, 216, 54)', margin:'0 4px' }} />
-        <WrapperStyleTextSell> | Đã bán {selled || 0}+</WrapperStyleTextSell>
+        <WrapperStyleTextSell> | Đã bán {sold || 0}+</WrapperStyleTextSell>
       </WrapperReportText>
       <WrapperPriceText>
         <span style={{ marginRight: '8px' }}>{convertPrice(price)}</span>
