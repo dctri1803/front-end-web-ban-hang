@@ -31,17 +31,22 @@ function App() {
   }
   if (localStorage.getItem('access_token')) {
     UserService.axiosJWT.interceptors.request.use(async (config) => {
-        const currentTime = new Date()
-        const { decoded } = handleDecoded()
-        if (decoded?.exp < currentTime.getTime() / 1000) {
-            const data = await UserService.refreshToken()
-            config.headers['token'] = `Bearer ${data?.access_token}` // Use 'Authorization' header for tokens
+      const currentTime = new Date()
+      const { decoded } = handleDecoded()
+      let storageRefreshToken = localStorage.getItem('refresh_token')
+      const refreshToken = JSON.parse(storageRefreshToken)
+      const decodedRefreshToken = jwtDecode(refreshToken)
+      if (decoded?.exp < currentTime.getTime() / 1000) {
+        if (decodedRefreshToken?.exp > currentTime.getTime() / 1000) {
+          const data = await UserService.refreshToken(refreshToken)
+          config.headers['token'] = `Bearer ${data?.access_token}` // Use 'Authorization' header for tokens
         }
-        return config;
+      }
+      return config;
     }, function (error) {
-        return Promise.reject(error);
+      return Promise.reject(error);
     });
-}
+  }
   const handleGetDetailsUser = async (id, token) => {
     const res = await UserService.getDetailsUser(id, token)
     dispatch(updateUser({ ...res?.data, access_token: token }))
