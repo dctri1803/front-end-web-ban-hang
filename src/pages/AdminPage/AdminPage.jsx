@@ -35,7 +35,6 @@ const AdminPage = () => {
   ]
 
   const onClick = (e) => {
-    console.log('click ', e);
     setKeySelected(e.key)
   };
 

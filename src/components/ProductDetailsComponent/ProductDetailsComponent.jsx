@@ -91,7 +91,6 @@ export const ProductDetailsComponent = ({ idProduct }) => {
     await handleAddOrderProduct()
     navigate('/order')
   }
-  console.log('productDetails', productDetails, user)
   return (
     <Loading isPending={isPending}>
       <Row style={{ padding: '16px', background: '#fff', borderRadius: '4px', }}>
@@ -99,22 +98,22 @@ export const ProductDetailsComponent = ({ idProduct }) => {
           <Image src={productDetails?.image} alt='image product' preview={false} />
           <Row style={{ paddingTop: '10px', justifyContent: 'space-between' }}>
             <WrapperStyleColImage span={4}>
-              <WrapperStyleImageSmall src={imageProductSmall} alt='image product' preview={false} />
+              <WrapperStyleImageSmall src={productDetails?.image} alt='image product' preview={false} />
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
-              <WrapperStyleImageSmall src={imageProductSmall} alt='image product' preview={false} />
+              <WrapperStyleImageSmall src={productDetails?.image} alt='image product' preview={false} />
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
-              <WrapperStyleImageSmall src={imageProductSmall} alt='image product' preview={false} />
+              <WrapperStyleImageSmall src={productDetails?.image} alt='image product' preview={false} />
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
-              <WrapperStyleImageSmall src={imageProductSmall} alt='image product' preview={false} />
+              <WrapperStyleImageSmall src={productDetails?.image} alt='image product' preview={false} />
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
-              <WrapperStyleImageSmall src={imageProductSmall} alt='image product' preview={false} />
+              <WrapperStyleImageSmall src={productDetails?.image} alt='image product' preview={false} />
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
-              <WrapperStyleImageSmall src={imageProductSmall} alt='image product' preview={false} />
+              <WrapperStyleImageSmall src={productDetails?.image} alt='image product' preview={false} />
             </WrapperStyleColImage>
           </Row>
         </Col>

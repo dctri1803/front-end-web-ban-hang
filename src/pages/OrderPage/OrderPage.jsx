@@ -207,7 +207,6 @@ export const OrderPage = () => {
     },
   ]
 
-  console.log('order?.orderItems', order?.orderItems)
   return (
     <div style={{ background: '#f5f5fa', with: '100%', height: '100vh' }}>
       <div style={{ height: '100%', width: '1270px', margin: '0 auto' }}>

@@ -29,7 +29,6 @@ const SignInPage = () => {
   const { data, isPending } = mutation
 
   useEffect(() => {
-    console.log('location', location)
     if (data?.status === 'OK') {
       if (location?.state) {
         navigate(location?.state)

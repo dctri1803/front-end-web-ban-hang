@@ -69,7 +69,7 @@ export const HomePage = () => {
 
   return (
     <Loading isPending={isPending}>
-      <div style={{ width: '1270px', margin: '0 auto' }}>
+      <div style={{ width: '100%', maxWidth: '1270px', margin: '0 auto' }}>
         <WrapperTypeProduct>
           {typeProducts.map((item) => {
             return <TypeProduct name={item} key={item} />;

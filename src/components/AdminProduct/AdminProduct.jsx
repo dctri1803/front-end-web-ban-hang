@@ -47,7 +47,6 @@ export const AdminProduct = () => {
   const mutationUpdate = useMutation({
     mutationFn: async (data) => {
       const { id, access_token, ...rests } = data
-      console.log('data', data)
       const res = await ProductService.updateProduct(id, access_token, { ...rests })
       return res
     },
@@ -111,12 +110,10 @@ export const AdminProduct = () => {
       fetchGetDetailsProduct(rowSelected)
     }
     setIsOpenDrawer(true)
-    console.log('rowSelected', rowSelected)
   }
 
   const queryProducts = useQuery({ queryKey: ['products'], queryFn: getAllProduct, })
   const queryTypeProducts = useQuery({ queryKey: ['type-products'], queryFn: fetchGetAllTypeProduct, })
-  console.log('queryTypeProducts', queryTypeProducts)
   const { isPending: isPendingProduct, data: products } = queryProducts
   const renderAction = () => {
     return (

@@ -8,7 +8,7 @@ import { InputComponent } from '../InputComponent/InputComponent';
 import { DrawerComponent } from '../DrawerComponent/DrawerComponent';
 import { Loading } from '../LoadingComponent/Loading';
 import { ModalComponent } from '../ModalComponent/ModalComponent';
-import { getBase64 } from '../../utils';
+import { formatDateTime, getBase64 } from '../../utils';
 import { useSelector } from 'react-redux';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import * as UserService from '../../services/UserService'
@@ -33,7 +33,6 @@ export const AdminUser = () => {
     const mutationUpdate = useMutation({
         mutationFn: async (data) => {
             const { id, access_token, ...rests } = data
-            console.log('data', data)
             const res = await UserService.updateUser(id, { ...rests }, access_token)
             return res
         },
@@ -79,7 +78,6 @@ export const AdminUser = () => {
 
     const getAllUser = async () => {
         const res = await UserService.getAllUser()
-        console.log('res', res)
         return res
     }
 
@@ -115,7 +113,6 @@ export const AdminUser = () => {
             fetchGetDetailsUser(rowSelected)
         }
         setIsOpenDrawer(true)
-        console.log('rowSelected', rowSelected)
     }
 
     const queryUser = useQuery({ queryKey: ['users'], queryFn: getAllUser, })
@@ -251,7 +248,8 @@ export const AdminUser = () => {
             title: 'Created at',
             dataIndex: 'createdAt',
             key: 'createdAt',
-            sorter: (a, b) => a.createdAt - b.createdAt,
+            sorter: (a, b) => new Date(a.updatedAt) - new Date(b.updatedAt),
+            render: (text) => formatDateTime(text),
         },
         {
             title: 'Action',
